@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import pancakesSVG from './assets/pancakes.svg';
-import './App.css';
 
 const PAN_PRICE = 10;
+
+const names = ['Pan', 'Kitchen', 'Factory'];
 
 function App() {
   const [count, setCount] = useState(0);
@@ -23,24 +24,38 @@ function App() {
   }, [passiveIncome]);
 
   return (
-    <>
-      <div className='counter-wrapper'>
-        {Math.round(count)} PANCAKES
-        <button className='pancakes' onClick={() => setCount(count => count + 1)}>
-          <img src={pancakesSVG} alt='Pancakes' />
-        </button>
-      </div>
-      <button className='maker' disabled={PAN_PRICE > count} onClick={buyPan}>
-        <div className='maker-details'>
-          <p className='maker-name'>Pan</p>
-          <p className='maker-price'>
-            <img src={pancakesSVG} alt='Pancakes' />{' '}
-            <span className='maker-price'>{PAN_PRICE}</span>
-          </p>
+    <div className='m-4'>
+      <h1 className='text-4xl text-fuchsia-900'>Make Some Pancakes</h1>
+      <div className='container mx-auto mt-24'>
+        <div className='grid grid-cols-2'>
+          <div className='flex flex-col items-center gap-8'>
+            <span className='text-2xl'>{Math.round(count)} PANCAKES</span>
+            <button className='pancakes' onClick={() => setCount(count => count + 1)}>
+              <img src={pancakesSVG} alt='Pancakes' />
+            </button>
+          </div>
+          <div className='flex flex-col gap-4'>
+            {names.map(name => (
+              <button
+                key={name}
+                className='flex max-w-sm items-center justify-between space-x-4 rounded-xl bg-white p-6 shadow-lg'
+                onClick={buyPan}
+              >
+                <div className='flex flex-col'>
+                  <p className='text-xl font-medium text-slate-900'>{name}</p>
+                  <div className='flex space-x-1'>
+                    <img className='h-5' src={pancakesSVG} alt={`${name} Logo`} />
+                    <span className='text-sm text-slate-500'>{PAN_PRICE}</span>
+                  </div>
+                  <p className='text-sm font-medium text-slate-500'></p>
+                </div>
+                <p className='text-3xl text-slate-500'>{pans}</p>
+              </button>
+            ))}
+          </div>
         </div>
-        {pans}
-      </button>
-    </>
+      </div>
+    </div>
   );
 }
 
