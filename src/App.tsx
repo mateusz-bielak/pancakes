@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
-import pancakesSvg from './assets/pancakes.svg';
+import pancakesSVG from './assets/pancakes.svg';
 import './App.css';
 
-const AUNT_PRICE = 10;
+const PAN_PRICE = 10;
 
 function App() {
   const [count, setCount] = useState(0);
-  const [aunts, setAunts] = useState(0);
+  const [pans, setPans] = useState(0);
 
-  const buyAunt = () => {
-    if (count >= AUNT_PRICE) {
-      setCount(value => value - AUNT_PRICE);
-      setAunts(value => value + 1);
+  const buyPan = () => {
+    if (count >= PAN_PRICE) {
+      setCount(value => value - PAN_PRICE);
+      setPans(value => value + 1);
     }
   };
 
-  const passiveIncome = useCallback(() => setCount(value => value + 0.1 * aunts), [aunts]);
+  const passiveIncome = useCallback(() => setCount(value => value + 0.1 * pans), [pans]);
 
   useEffect(() => {
     const interval = setInterval(passiveIncome, 100);
@@ -23,16 +23,24 @@ function App() {
   }, [passiveIncome]);
 
   return (
-    <div>
-      <button onClick={() => setCount(count => count + 1)}>
-        <img src={pancakesSvg} alt='Pancakes' />
+    <>
+      <div className='counter-wrapper'>
+        {Math.round(count)} PANCAKES
+        <button className='pancakes' onClick={() => setCount(count => count + 1)}>
+          <img src={pancakesSVG} alt='Pancakes' />
+        </button>
+      </div>
+      <button className='maker' disabled={PAN_PRICE > count} onClick={buyPan}>
+        <div className='maker-details'>
+          <p className='maker-name'>Pan</p>
+          <p className='maker-price'>
+            <img src={pancakesSVG} alt='Pancakes' />{' '}
+            <span className='maker-price'>{PAN_PRICE}</span>
+          </p>
+        </div>
+        {pans}
       </button>
-      {Math.round(count)}
-      <button disabled={AUNT_PRICE > count} onClick={buyAunt}>
-        <p>Aunt Barbara: {aunts}</p>
-        <p>{AUNT_PRICE}</p>
-      </button>
-    </div>
+    </>
   );
 }
 
