@@ -19,7 +19,7 @@ const Card = ({ id }: CardProps) => {
 
   return (
     <button
-      className='flex max-w-sm items-center justify-between space-x-4 rounded-xl bg-white p-6 shadow-lg'
+      className='flex items-center justify-between space-x-4 rounded-xl bg-slate-50 p-6 shadow-lg'
       onClick={updateMaker(id)}
     >
       <div className='flex flex-col'>

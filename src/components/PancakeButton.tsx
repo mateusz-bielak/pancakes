@@ -5,7 +5,7 @@ export const PancakeButton = () => {
   const setPancakes = usePancakesStore(state => state.setPancakes);
 
   return (
-    <div className='flex flex-col items-center gap-4'>
+    <div className='mt-10 flex flex-col items-center gap-4'>
       <PancakeCounter />
       <button className='pancakes' onClick={() => setPancakes()}>
         <img src={pancakesSVG} alt='Pancakes' />
