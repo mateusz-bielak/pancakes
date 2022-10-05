@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import create from 'zustand';
 import { Header } from './components/Header';
-import { Maker } from './components/Maker';
+import { MakersList } from './components/MakersList';
 import { PancakeButton } from './components/PancakeButton';
+
+export const makerKeys = ['pan', 'cook', 'restaurant', 'hellsKitchen'] as const;
 
 type Maker = {
   name: string;
@@ -10,52 +13,59 @@ type Maker = {
   amount: number;
 };
 
-export const App = () => {
-  const [count, setCount] = useState(0);
+type Store = {
+  pancakes: number;
+  income: number;
+  pan: Maker;
+  cook: Maker;
+  restaurant: Maker;
+  hellsKitchen: Maker;
+  setPancakes: () => void;
+  passiveIncome: () => void;
+  updateMaker: (key: typeof makerKeys[number]) => () => void;
+};
 
-  const [income, setIncome] = useState(0);
-  const panState = useState<Maker>({ name: 'Pan', price: 10, income: 0.1, amount: 0 });
-  const kitchenState = useState<Maker>({ name: 'Cook', price: 100, income: 1, amount: 0 });
-  const factoryState = useState<Maker>({ name: 'Restaurant', price: 300, income: 3, amount: 0 });
-  const rocketState = useState<Maker>({ name: "Hell's Kitchen", price: 500, income: 5, amount: 0 });
+export const usePancakesStore = create<Store>((set, get) => ({
+  pancakes: 0,
+  income: 0,
 
-  const makers = [panState, kitchenState, factoryState, rocketState];
+  pan: { name: 'Pan', price: 10, income: 0.1, amount: 0 },
+  cook: { name: 'Cook', price: 100, income: 1, amount: 0 },
+  restaurant: { name: 'Restaurant', price: 300, income: 3, amount: 0 },
+  hellsKitchen: { name: "Hell's Kitchen", price: 500, income: 5, amount: 0 },
 
-  const buyMaker = (maker: Maker, setMaker: React.Dispatch<React.SetStateAction<Maker>>) => () => {
-    if (count >= maker.price) {
-      setCount(value => value - maker.price);
-      setMaker(({ amount, price, ...rest }) => ({
-        amount: amount + 1,
-        price: Math.round(price * 1.15),
-        ...rest,
-      }));
-      setIncome(value => value + maker.income);
+  setPancakes: () => set(state => ({ pancakes: state.pancakes + 1 })),
+  passiveIncome: () => set(state => ({ pancakes: state.pancakes + state.income / 10 })),
+
+  updateMaker: (key: typeof makerKeys[number]) => () => {
+    if (get()[key].price > get().pancakes) {
+      return;
     }
-  };
+    set(state => ({
+      pancakes: state.pancakes - state[key].price,
+      income: state.income + state[key].income,
+      [key]: {
+        ...state[key],
+        amount: state[key].amount + 1,
+        price: Math.ceil(state[key].price * 1.15),
+      },
+    }));
+  },
+}));
 
-  const passiveIncome = useCallback(() => setCount(value => value + 0.1 * income), [income]);
+export const App = () => {
+  const passiveIncome = usePancakesStore(state => state.passiveIncome);
 
   useEffect(() => {
-    const interval = setInterval(passiveIncome, 100);
-    return () => clearInterval(interval);
-  }, [passiveIncome]);
+    setInterval(passiveIncome, 100);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className='m-4'>
       <Header />
       <div className='container mx-auto mt-24 grid grid-cols-2 '>
-        <PancakeButton count={count} setCount={setCount} />
-        <Maker.ListWrapper>
-          {makers.map(([maker, setMaker]) => (
-            <Maker.Card
-              key={maker.name}
-              amount={maker.amount}
-              name={maker.name}
-              onClick={buyMaker(maker, setMaker)}
-              price={maker.price}
-            />
-          ))}
-        </Maker.ListWrapper>
+        <PancakeButton />
+        <MakersList />
       </div>
     </div>
   );
