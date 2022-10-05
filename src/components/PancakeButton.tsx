@@ -5,7 +5,7 @@ export const PancakeButton = () => {
   const setPancakes = usePancakesStore(state => state.setPancakes);
 
   return (
-    <div className='mt-10 flex flex-col items-center gap-4'>
+    <div className='flex flex-col items-center gap-4'>
       <PancakeCounter />
       <button className='pancakes' onClick={() => setPancakes()}>
         <img src={pancakesSVG} alt='Pancakes' />
@@ -19,8 +19,10 @@ const PancakeCounter = () => {
   const income = usePancakesStore(state => state.income);
   return (
     <div className='flex flex-col items-center'>
-      <span className='text-2xl'>{Math.floor(pancakes)} PANCAKES</span>
-      <span className='text-sm'>{Math.round(income * 10) / 10} per second</span>
+      <span className='text-2xl text-slate-800'>{Math.floor(pancakes)} PANCAKES</span>
+      <span className='text-sm font-medium text-slate-800'>
+        {Math.round(income * 10) / 10} per second
+      </span>
     </div>
   );
 };

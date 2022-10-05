@@ -61,14 +61,16 @@ export const App = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className='flex h-screen items-center justify-center bg-gradient-to-b from-purple-200 to-purple-50'>
-      <div className='rounded-3xl bg-white p-6 shadow-2xl'>
-        <div className='grid grid-cols-2 gap-6'>
-          <div className='flex flex-col'>
-            <Header />
-            <PancakeButton />
+    <div className='h-screen overflow-y-scroll bg-gradient-to-b from-purple-200 to-purple-50 p-6'>
+      <div className='sm:flex sm:h-full sm:items-center sm:justify-center'>
+        <div className='sm:rounded-3xl sm:bg-slate-50 sm:p-6 sm:shadow-2xl'>
+          <div className='grid gap-10 sm:grid-cols-2 sm:gap-10'>
+            <div className='flex flex-col gap-10'>
+              <Header />
+              <PancakeButton />
+            </div>
+            <MakersList />
           </div>
-          <MakersList />
         </div>
       </div>
     </div>
