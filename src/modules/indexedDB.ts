@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import setupIndexedDB, { useIndexedDBStore } from 'use-indexeddb';
 import { IndexedDBConfig } from 'use-indexeddb/dist/interfaces';
-import { usePancakesStore } from './store';
+import { Maker, makerKeys, usePancakesStore } from './store';
 
 const PANCAKES_STORE = 'pancakes';
 const AMOUNT_KEY = 'amount';
@@ -26,15 +26,26 @@ const usePancakesLoader = () => {
   };
 };
 
+const useMakersLoader = () => {
+  const { getByID } = useIndexedDBStore<Maker>(PANCAKES_STORE);
+  const setMaker = usePancakesStore(state => state.setMaker);
+
+  return () => {
+    makerKeys.forEach(async key => setMaker(key, await getByID(key)));
+  };
+};
+
 export const usePancakesUpdater = () => {
   const getPancakesData = usePancakesStore(state => state.getPancakesData);
-  const { update } = useIndexedDBStore<number>(PANCAKES_STORE);
+  const getMakersData = usePancakesStore(state => state.getMakersData);
+  const { update } = useIndexedDBStore(PANCAKES_STORE);
 
   const updateIndexedDB = useCallback(() => {
     const { pancakes, income } = getPancakesData();
     update(pancakes, AMOUNT_KEY);
     update(income, INCOME_KEY);
-  }, [getPancakesData, update]);
+    getMakersData().forEach(([key, maker]) => update(maker, key));
+  }, [getPancakesData, getMakersData, update]);
 
   useEffect(() => {
     const interval = setInterval(updateIndexedDB, 1000);
@@ -43,8 +54,10 @@ export const usePancakesUpdater = () => {
 };
 
 export const useSetupIndexedDB = async () => {
-  const { add, getAll } = useIndexedDBStore<number>(PANCAKES_STORE);
+  const makersData = usePancakesStore(state => state.getMakersData());
+  const { add, getAll } = useIndexedDBStore(PANCAKES_STORE);
   const loadPancakes = usePancakesLoader();
+  const loadMakers = useMakersLoader();
 
   if (indexedDBIsCreated) return;
   indexedDBIsCreated = true;
@@ -54,10 +67,12 @@ export const useSetupIndexedDB = async () => {
   const addIndices = () => {
     add(0, AMOUNT_KEY);
     add(0, INCOME_KEY);
+    makersData.forEach(([key, maker]) => add(maker, key));
   };
 
   const hasData = (await getAll()).length > 0;
   !hasData && addIndices();
 
   loadPancakes();
+  loadMakers();
 };

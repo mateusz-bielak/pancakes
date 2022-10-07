@@ -14,6 +14,7 @@ type CardProps = {
 };
 
 const Card = ({ id }: CardProps) => {
+  const pancakes = usePancakesStore(state => state.pancakes);
   const { amount, income, name, price } = usePancakesStore(state => state[id]);
   const addIncome = usePancakesStore(state => state.addIncome);
   const addPancakes = usePancakesStore(state => state.addPancakes);
@@ -28,6 +29,7 @@ const Card = ({ id }: CardProps) => {
   return (
     <button
       className='flex items-center justify-between space-x-4 rounded-xl bg-slate-50 p-6 shadow-lg sm:bg-sky-200'
+      disabled={price > pancakes}
       onClick={onClick}
     >
       <div className='flex flex-col'>
