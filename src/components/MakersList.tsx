@@ -15,13 +15,13 @@ type CardProps = {
 
 const Card = ({ id }: CardProps) => {
   const { amount, income, name, price } = usePancakesStore(state => state[id]);
-  const setIncome = usePancakesStore(state => state.setIncome);
-  const setPancakes = usePancakesStore(state => state.setPancakes);
+  const addIncome = usePancakesStore(state => state.addIncome);
+  const addPancakes = usePancakesStore(state => state.addPancakes);
   const updateMaker = usePancakesStore(state => state.updateMaker);
 
   const onClick = () => {
-    setIncome(income);
-    setPancakes(-price);
+    addIncome(income);
+    addPancakes(-price);
     updateMaker(id);
   };
 
