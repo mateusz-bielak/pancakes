@@ -1,5 +1,5 @@
-import { makerKeys, usePancakesStore } from '../App';
 import pancakesSVG from '../assets/pancakes.svg';
+import { makerKeys, usePancakesStore } from '../modules/store';
 
 export const MakersList = () => (
   <div className='flex flex-col gap-4'>
@@ -14,13 +14,21 @@ type CardProps = {
 };
 
 const Card = ({ id }: CardProps) => {
-  const { amount, name, price } = usePancakesStore(state => state[id]);
+  const { amount, income, name, price } = usePancakesStore(state => state[id]);
+  const setIncome = usePancakesStore(state => state.setIncome);
+  const setPancakes = usePancakesStore(state => state.setPancakes);
   const updateMaker = usePancakesStore(state => state.updateMaker);
+
+  const onClick = () => {
+    setIncome(income);
+    setPancakes(-price);
+    updateMaker(id);
+  };
 
   return (
     <button
       className='flex items-center justify-between space-x-4 rounded-xl bg-slate-50 p-6 shadow-lg sm:bg-sky-200'
-      onClick={updateMaker(id)}
+      onClick={onClick}
     >
       <div className='flex flex-col'>
         <p className='text-xl font-medium text-slate-800'>{name}</p>
